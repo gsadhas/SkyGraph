@@ -1,0 +1,8 @@
+{% extends "Weather/base.html" %}
+{% block content %}
+    <h3>Thank you for using SkyGraph!.<br/>You are logged out.</h3><br/>
+    <p><a href="/accounts/login">Login again</a></p>
+    <script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+{% endblock %}

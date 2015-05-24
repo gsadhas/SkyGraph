@@ -1,0 +1,39 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+{% if is_auth %}
+    <div style="float: right;">
+    Welcome ! {{ first_name }}
+     <a href="/accounts/logout/">Logout</a> |
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+     <div >
+    <h1>Your Account Details</h1><br/>
+    </div>
+    <div><a href="/Weather/editacc"><input type="button" value="Edit Account"/>  </a></div>
+    <div style="padding-left: 5em; font-size: 2em">
+    {% if allobj %}
+
+        {% for obj in allobj %}
+            {% if obj.Uname == first_name %}
+
+                Last Name : {{ obj.Lname }} <br/>
+                First Name : {{ obj.Fname }}<br/>
+                Email-ID : {{ obj.Email }}<br/>
+                User Name : {{ obj.Uname }}<br/>
+                Your City: {{ obj.City }}
+
+            {% endif %}
+        {% endfor %}
+
+    {% endif %}
+    </div>
+          <script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends "Weather/base.html" %}
+{% block content %}
+
+{% if user.is_authenticated %}
+    <div style="float: right;">
+     <a href="/accounts/logout/">Logout</a> |
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+
+
+    <h3 style="text-align: center"> Help Page</h3>
+    <p> This is SkyGraph. You can use to find weather details about your location.<br/>
+    If you are client you can login to SkyGraph and compare your business data with weather conditions</p>
+
+    <img src="/static/help/login.jpg" width="230" height="196" alt="Login" />
+    <p>Click <a href="/accounts/login/">here</a> to login again.!</p> <br/>
+
+    <img src="/static/help/register.jpg" width="450" height="196" alt="Register" />
+    <p><a href="/accounts/register/">If you don't have an account. Create an account here</a></p>
+
+    <p> After you login you will see welcome screen more feature like widgets.</p>
+    <img src="/static/help/loggedin.jpg" width="450" height="50" alt="widgets" />
+
+    <p> There are four widgets in Skygraph: Import, Compare, Share, and Export.</p>
+    <img src="/static/help/widgets.jpg" width="230" height="196" alt="Widgets" />
+
+    <p> To compare the data first thing you will need to do is import the TSV data file in date data format</p>
+    <img src="/static/help/import1.jpg" width="450" height="196" alt="Loggedin" />
+    <p> A dialog will pop to choose the file, once selected click upload</p>
+    <img src="/static/help/import2.jpg" width="450" height="196" alt="Loggedin" />
+    <p> Once imported you can look up the file with the dropdown list, and click compare</p>
+    <img src="/static/help/compare1.jpg" width="450" height="196" alt="Loggedin" />
+    <img src="/static/help/compare2.jpg" width="450" height="196" alt="Loggedin" />
+    <p> To send a email of the 5 day forecast. Click on send email, and it will be send to your email to share.</p>
+    <img src="/static/help/email.jpg" width="450" height="196" alt="Loggedin" />
+
+    <script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) repeat');
+    </script>
+{% endblock %}

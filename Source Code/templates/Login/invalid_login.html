@@ -1,0 +1,13 @@
+{% extends "Weather/base.html" %}
+{% block content %}
+    <h2> Your login is invalid</h2>
+
+    <p>Click <a style="text-decoration: underline" href="/accounts/login/">here</a> to Sign In again.!</p> <br/>
+    <p><a style="text-decoration: underline" href="/accounts/register/">Create an account</a></p>
+
+    <script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+
+
+{% endblock %}

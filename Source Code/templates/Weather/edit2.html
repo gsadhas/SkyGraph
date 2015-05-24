@@ -1,0 +1,23 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+{% if is_auth %}
+    <div style="float: right;">
+    Welcome ! {{ first_name }}
+     <a href="/accounts/logout/">Logout</a> |
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+
+     <h3>Your New Account Details saved!!</h3><br/>
+    <a href="/accounts/loggedin"><input type="button" value="OK"/></a>
+
+
+          <script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+
+{% if user.is_authenticated %}
+
+    <div style="float: right;">
+    Welcome ! {{ full_name }} |
+     <a href="/accounts/logout/">Logout </a> |
+     </div>
+
+    {% endif %}
+    <div>
+    <h2>Hi {{ full_name }} - You are now logged in!</h2>
+    </div>
+
+
+<div style="height:50px;float: right">
+</div>
+    <div style="height: 30px;width: 100%;"> <h3>Around United States - Check Weather</h3>
+    </div>
+    <div>
+    <table>
+        <tbody>
+        <tr><td> <a href="/Weather/areal">Chicago</a> </td>
+        <tr><td><a href="/Weather/newyl">New York</a></td></tr>
+        <tr><td><a href="/Weather/losal">Los Angeles</a></td></tr>
+        <tr><td><a href="/Weather/housl">Houston</a></td></tr>
+        <tr><td><a href="/Weather/sanfl">San Francisco</a></td></tr>
+        <tr><td><a style="text-decoration: underline" href="/Weather/areal">Current Location</a></td></tr>
+        </tbody>
+    </table>
+    </div>
+<script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+
+
+{% endblock %}

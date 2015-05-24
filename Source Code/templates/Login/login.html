@@ -1,0 +1,30 @@
+
+{% extends "Weather/base.html" %}
+{% block content %}
+    {% if user.is_authenticated %}
+    <div style="float: right;">
+     <a href="/accounts/logout/">Logout </a>|
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+<div style="padding-left: 5em">
+    <h3>Enter Login details</h3>
+    {% if form.errors %}
+    <p class="error">Sorry. Login Invalid</p>
+    {% endif %}
+    <form action="/accounts/auth/" method="post">{% csrf_token %}
+    <label for="username">Username &nbsp;</label>
+    <input type="text" name="username" value="" id="username"/><br/><br/>
+    <label for="password">Password&nbsp;</label>
+    <input type="password" name="password" value="" id="password"/><br/><br/>
+    <input type="submit" value="Login"/>
+</form>
+</div>
+<script>
+    $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+    </script>
+{% endblock %}

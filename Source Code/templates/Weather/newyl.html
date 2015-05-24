@@ -1,0 +1,55 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+
+{% if user.is_authenticated %}
+    <div style="float: right;">
+    Welcome ! {{ full_name }} |
+     <a href="/accounts/logout/">Logout</a> |
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+
+<div id="block2">
+    <h1> {{ ryahony.title }}</h1>
+    <h3>Last Updated on {{ ryahony.condition.date }} </h3>
+    {% autoescape off %}
+        {{ ryahony.html_description }}
+    {% endautoescape %}
+    </div>
+
+
+
+    <div id="block2"> <h1>From Weather.com - {{ rweatny.location.name }}</h1>
+        Last Updated on {{ rweatny.current_conditions.last_updated }}
+    <img src="http://s.imwx.com/v.20131006.214956/img/wxicon/120/{{ rweatny.current_conditions.icon }}.png"/><br/>
+
+    <h3>Forecast :</h3>
+
+   <b>  Current Conditions: {{ rweatny.current_conditions.text }}</b> <br/>
+        <b>Temperature : {{ rweatny.current_conditions.temperature}} C</b>
+    </div>
+
+    <h1>From NOAA - New York </h1>
+               <br/>
+        {{ rnoaany.observation_time }} <br/>
+        <img src="{{ rnoaany.icon_url_base }}{{rnoaany.icon_url_name }}" alt="icon"/><br/>
+        <h3>Forecast :</h3>
+        <b>  Current Conditions: {{ rnoaany.weather }} </b>
+
+        <br/>
+        <b>Temperature : {{ rnoaany.temperature_string}} </b><br>
+    <b><a href="{{ rnoaany.two_day_history_url }}"> Two days history</a></b>
+
+
+    </div>
+
+
+    <script>
+    $('body').css('background', 'url(/static/weather/images/5.jpg) no-repeat');
+    </script>
+{% endblock %}

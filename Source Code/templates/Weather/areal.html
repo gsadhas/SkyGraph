@@ -1,0 +1,51 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+{% if is_auth %}
+    <div style="float: right;">
+    Welcome ! {{ full_name }} |
+     <a href="/accounts/logout/">Logout</a> |
+     </div>
+    {% else %}
+    <div style="height:50px;float: right">
+    <a href="/accounts/login" style="text-decoration: none">Sign In</a> |
+    <a href="/accounts/register">Create account</a> |
+    </div>
+    {% endif %}
+
+<div id="block2">
+    <h1> {{ result2.title }}</h1>
+    <h3>Date : {{ result2.condition.date }} </h3>
+    {% autoescape off %}
+        {{ result2.html_description }}
+    {% endautoescape %}
+    </div>
+    <div id="block2"> <h1>From Weather.com - {{ data2.location.name }}</h1>
+        Last Updated on {{ data2.current_conditions.last_updated }}
+    <img src="http://s.imwx.com/v.20131006.214956/img/wxicon/120/{{ data2.current_conditions.icon }}.png"/><br/>
+
+    <h3>Forecast :</h3>
+
+   <b>  Current Conditions: {{ data2.current_conditions.text }}</b> <br/>
+        <b>Temperature : {{ data2.current_conditions.temperature}} C</b>
+    </div>
+     <div id="block2">
+    <h1>From NOAA - Chicago </h1>
+               <br/>
+        {{ data4.observation_time }} <br/>
+        <img src="{{ data4.icon_url_base }}{{data4.icon_url_name }}" alt="icon"/><br/>
+        <h3>Forecast :</h3>
+        <b>  Current Conditions: {{ data4.weather }} </b>
+
+        <br/>
+        <b>Temperature : {{ data4.temperature_string}} </b><br>
+    <b><a href="{{ data4.two_day_history_url }}"> Two days history</a></b>
+
+
+
+
+    </div>
+    <script>
+    $('body').css('background', 'url(/static/weather/images/1.jpg) no-repeat');
+    </script>
+{% endblock %}

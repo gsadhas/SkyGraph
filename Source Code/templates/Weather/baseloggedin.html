@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+
+
+    <style>
+    .back1{
+        /*background: url(/static/weather/images/4.jpg) no-repeat;*/
+        color: #ffffff;
+    }
+    a{
+        color:#ffffff;
+        text-decoration: none;
+    }
+    .helptext{
+        display: none;
+    }
+        #block1, #block2{
+            width:30%;
+            float: left;
+            height:50%;
+            //border: 2px solid red;
+
+        }
+        .topbar{
+
+            width:90%;
+            //border: 1px solid green;
+            height: 60px;
+        }
+        .sigin
+        {
+            float: right;
+        }
+        .content
+        {
+            //border:1px solid red;
+            margin: 5%;
+        }
+
+    </style>
+
+    <link rel="stylesheet" type="text/css" href="static/weather/css/style.css"/>
+<title>SkyGraph</title>
+</head>
+<body class="back1">
+<div class="topbar" >
+<h1 style="text-align: center"><a href="/accounts/loggedin" style="text-decoration: none;font-size: 55px"><b>SkyGraph</b></a></h1></div>
+<a style="float: right;" href="/Weather/helpl" style="text-decoration: none">Help</a>
+<a style="float: right;" href="/Weather/account" style="text-decoration: none">Account Info |</a>
+<a style="float: right;" href="/Weather/widgets" style="text-decoration: none">Widgets |</a>
+
+{% block content %}
+{% endblock %}
+
+</body>
+</html>

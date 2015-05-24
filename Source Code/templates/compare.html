@@ -1,0 +1,355 @@
+{% extends "Weather/baseloggedin.html" %}
+{% block content %}
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/html">
+    <head>
+        <meta charset="utf-8">
+        <title>Data Comparisons</title>
+        <script type="text/javascript" src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+        <!-- The next two lines are not needed -->
+        <!--<script type="text/javascript" src="http://mbostock.github.com/d3/d3.csv.js"></script>
+        <script type="text/javascript" src="http://mbostock.github.com/d3/d3.time.js"></script>-->
+        <style>
+            body {
+				font: 13px sans-serif;
+			}
+			.axis path,
+			.axis line{
+				fill: none;
+				stroke: white;
+				shape-rendering: crispEdges;
+			}
+			.x.axis path{
+			    stroke: white;
+                shape-rendering: crispEdges;
+			}
+			.line{
+				fill: none;
+				stroke: #4682b4;
+				stroke-width: 1.5px;
+			}
+            .line2{
+                fill: none;
+                stroke: white;
+                stroke-width: 1.5px;
+            }
+        </style>
+        <script>
+            $('body').css('background', 'url(/static/weather/images/base.jpg) no-repeat');
+        </script>
+    </head>
+    <body>
+        <!-- Create a few containers to display graphs -->
+        <!-- Main containers for the entire web page -->
+        <div id="container" style="position:absolute; width=100%; height=95%"></div>
+        <!-- Now divide the page into two separate sections -->
+            <!-- Small container for the drop-down menu for selecting a file
+            <div id="drop-down" style="position:absolute; width:0%; height:0%"></div> -->
+            <!-- This will be the weather data container -->
+            <div id="data" style="position:relative; float:left; width:100%; height:90%"></div>
+        </div>
+        <div>
+            <!-- List of uploaded documents -->
+            {% if documents %}
+               <br> Select your business data: </br>
+                <select id="documentURL">
+                    {% for document in documents %}
+                        <option value="{{ document.docfile.url }}">{{ document.docfile.name }}</option>
+                    {% endfor %}
+                </select>
+                </br></br>
+                Select your city for weather: </br>
+                <select id="citySelect">
+                    <option value="Chicago">Chicago</option>
+                    <option value="Los_Angeles">Los Angeles</option>
+                    <option value="Houston">Houston</option>
+                    <option value="San_Franciso">San Franciso</option>
+                    <option value="New_York">New York</option>
+                </select>
+                <!-- Select which fiscal quarter / entire year to display in graph -->
+                </br><br>
+                Select Fiscal Quarter: </br>
+                <select id="fiscalQuarter">
+                    <!-- October 1 - December 31 -->
+                    <option value="First">First</option>
+                    <!-- January 1 - March 31 -->
+                    <option value="Second">Second</option>
+                    <!-- April 1 - June 30 -->
+                    <option value="Third">Third</option>
+                    <!-- July 1 - September 30 -->
+                    <option value="Fourth">Fourth</option>
+                    <!-- Whole Fiscal Year -->
+                    <option value="Year">Year</option>
+                </select>
+                </br><br>
+                <button id="compareButton">Compare</button>
+            <div>
+                <script type="text/javascript">
+                    d3.select("#compareButton").on("click", function(d,i)
+                    {
+                        console.log(d3.select("#citySelect").node().value);
+                        console.log(d3.select("#fiscalQuarter").node().value);
+                        // Maybe also so query dates as well to compare_with_weather
+                        compare_with_weather(d3.select("#documentURL").node().value,
+                                            d3.select("#citySelect").node().value,
+                                            d3.select("#fiscalQuarter").node().value);
+                    })
+
+                    function compare_with_weather(filename, city, fiscal)
+                    {
+                        read_CSV(filename, city, fiscal);
+                    }
+
+                    function read_CSV(filename, city, fiscal)
+                    {
+                        // New code from Raul Luna, JR
+                        // Need to clear the previous charts
+                        d3.select("svg")
+                            .remove();
+
+                        // Need to be able to query certain dates if needed
+
+                        // Script for allocating a line graph for the specify file
+                        var margin = {top:50,right:70,bottom: 70,left:70},
+                        width = 960;// - margin.left - margin.right,
+                        height = 500 - margin.top - margin.bottom;
+
+                        // abbreviated to # day of month
+                        // Full month's name
+                        // Full year
+                        // Fixed variables for Weather and Business Data Graphs
+                        var parseDate = d3.time.format("%d-%B-%Y").parse;
+                        var parseDate2 = d3.time.format("%m-%d-%y").parse;
+
+                        var x = d3.time.scale()
+                            .range([0, width]);
+
+                        var y0 = d3.scale.linear()
+                            .range([height, 0]);
+
+                        var y1 = d3.scale.linear()
+                            .range([height, 0]);
+
+                        var xAxis = d3.svg.axis()
+                            .scale(x)
+                            .orient("bottom");
+
+                        var yAxisLeft = d3.svg.axis(y0)
+                            .scale(y0)
+                            .orient("left");
+
+                        var yAxisRight = d3.svg.axis(y1)
+                            .scale(y1)
+                            .orient("right");
+
+                        var line = d3.svg.line()
+                            .x(function(d) { return x(d.date); })
+                            .y(function(d) { return y0(d.count); });
+
+                        var line2 = d3.svg.line()
+                                .x(function(d) { return x(d.date); })
+                                .y(function(d) { return y1(d.temp); });
+
+                        var svg = d3.select("#data").append("svg")
+                            .attr("width", width + margin.left + margin.right)
+                            .attr("height", height + margin.top + margin.bottom)
+                          .append("g")
+                            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+                            .attr("stroke", "white");
+
+                        // Business Data Implementation
+                        // Need to able to parse dates when necessary
+                        d3.tsv( filename, function(error, data) {
+                          data.forEach(function(d) {
+                                d.d = parseDate(d.date);
+                                var month = d.d.getMonth();
+                                //console.log(month);
+                                // Parse for first fiscal quarter
+                                if( fiscal == "First") {
+                                    // October, November, December
+                                    if( month == 09 || month == 10 || month == 11){
+                                       d.date = parseDate(d.date);
+                                       d.count = +d.count;
+                                    }
+                                }
+                                // Parse for second fiscal quarter
+                                else if( fiscal == "Second") {
+                                    //console.log(month);
+                                    // January, February, March
+                                    if( month == 00 || month == 01 || month == 02){
+                                       d.date = parseDate(d.date);
+                                       d.count = +d.count;
+                                    }
+                                }
+                                // Parse for third fiscal quarter
+                                else if( fiscal == "Third") {
+                                    //console.log(month);
+                                    // April, May, June
+                                    if( month == 03 || month == 04 || month == 05){
+                                       d.date = parseDate(d.date);
+                                       d.count = +d.count;
+                                    }
+                                }
+                                // Parse for fourth fiscal quarter
+                                else if( fiscal == "Fourth") {
+                                    //console.log(month);
+                                    // July, August, September
+                                    if( month == 06 || month == 07 || month == 08){
+                                       d.date = parseDate(d.date);
+                                       d.count = +d.count;
+                                    }
+                                }
+                                // Display full Fiscal Year
+                                else{
+                                    //console.log("Error occurred homies!!!!");
+                                    d.date = parseDate(d.date);
+                                    d.count = +d.count;
+                                }
+                          });
+
+                          x.domain(d3.extent(data, function(d) { return d.date; }));
+                          y0.domain(d3.extent(data, function(d) { return d.count; }));
+
+                          svg.append("text")
+                              .attr("x", (width / 2))
+                              .attr("y", 0 - (margin.top / 2))
+                              .attr("text-anchor", "middle")
+                              .style("font-size", "16px")
+                              .style("text-decoration", "underline")
+                              .text( filename)
+                              .attr("stroke", "white");
+
+                          svg.append("g")
+                              .attr("class", "x axis")
+                              .attr("transform", "translate(0," + height + ")")
+                              .call(xAxis)
+                              .selectAll("text")
+                              .style("text-anchor", "end")
+                              .attr("dx", "-.8em")
+                              .attr("dy", ".15em")
+                              .attr("stroke", "white")
+                              .attr("transform", function(d) {
+                                return "rotate(-65)"
+                            });
+
+                          svg.append("g")
+                              .attr("class", "y axis")
+                              .attr("stroke","#4682b4")
+                              .attr("font-size", "16px")
+                              .call(yAxisLeft)
+                            .append("text")
+                              .attr("y", 10)
+                              .attr("dy", ".71em")
+                              .attr("stroke", "#4682b4")
+                              .style("text-anchor", "end")
+                              .text("Sales ($)");
+
+                          svg.append("path")
+                              .datum(data)
+                              .attr("class", "line")
+                              .attr("d", line);
+                        });
+                        // Weather Graph Implementation
+                        // Need to able to parse dates when necessary
+                        d3.csv( "/media/documents/2014/11/14/" + city + ".csv", function(error, data) {
+                          data.forEach(function(d) {
+                              d.d = parseDate2(d.date);
+                              var month = d.d.getMonth();
+                              // Parse for first fiscal quarter
+                              if( fiscal == "First") {
+                                  // October, November, December
+                                  if( month == 09 || month == 10 || month == 11) {
+                                      d.date = parseDate2(d.date);
+                                      d.temp = +d.temp;
+                                  }
+                              }
+                              // Parse for second fiscal quarter
+                              else if( fiscal == "Second"){
+                                  // January, February, March
+                                  if( month == 00 || month == 01 || month == 02){
+                                      d.date = parseDate2(d.date);
+                                      d.temp = +d.temp;
+                                  }
+                              }
+                              // Parse for third fiscal quarter
+                              else if( fiscal == "Third"){
+                                  // April, May, June
+                                  if( month == 03 || month == 04 || month == 05){
+                                      d.date = parseDate2(d.date);
+                                      d.temp = +d.temp;
+                                  }
+                              }
+                              // Parse for fourth fiscal quarter
+                              else if( fiscal == "Fourth"){
+                                  // July, August, September
+                                  if( month == 06 || month == 07 || month == 08){
+                                      d.date = parseDate2(d.date);
+                                      d.temp = +d.temp;
+                                  }
+                              }
+                              // Parse for full fiscal year
+                              else{
+                                  d.date = parseDate2(d.date);
+                                  d.temp = +d.temp;
+                              }
+                          });
+
+                          x.domain(d3.extent(data, function(d) { return d.date; }));
+                          y1.domain(d3.extent(data, function(d) { return d.temp; }));
+
+                          // Not needed because we are only displaying the Business Data filename
+                          /*svg.append("text")
+                              //.attr("x", (width / 2))
+                              .attr("y", 0 - (margin.top / 2))
+                              .attr("text-anchor", "middle")
+                              .style("font-size", "16px")
+                              .style("text-decoration", "underline")
+                              .attr("transform", "translate(" + width + ",0)");
+                              // Displaying file name
+                              //.text( filename);*/
+
+                          // Not needed because both files correspond to the same date
+                          /*svg.append("g")
+                              .attr("class", "x axis")
+                              .attr("transform", "translate(0," + height + ")")
+                              .call(xAxis)
+                              .selectAll("text")
+                              .style("text-anchor", "end")
+                              .attr("dx", "-.8em")
+                              .attr("dy", ".15em")
+                              .attr("transform", function(d) {
+                                return "rotate(-65)"
+                            });*/
+
+                          svg.append("g")
+                              .attr("class", "y axis")
+                              .attr("stroke", "white")
+                              .attr("font-size", "16px")
+                              .attr("transform", "translate(" + width + ",0)")
+                              .call(yAxisRight)
+                            .append("text")
+                              //.attr("transform", "rotate(-90)")
+                              //.attr("transform", "translate(" + width + ",0)")
+                              .attr("y", 10)
+                              .attr("dy", ".71em")
+                              .style("text-anchor", "end")
+                              .text("Temp (˚F)")
+                              .attr("stroke", "white");
+
+                          svg.append("path")
+                              .datum(data)
+                              .attr("class", "line2")
+                              .attr("d", line2);
+                        });
+                    }
+                </script>
+            </div>
+            {% else %}
+                <p>No documents.</p>
+            {% endif %}
+        </div>
+    </body>
+</html>
+{% endblock %}
